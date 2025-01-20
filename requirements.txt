@@ -1,0 +1,5 @@
+torch # NOTE: you need cuda enabled torch
+safetensors # for saving & loading model weights
+tokenizers 
+huggingface_hub # for storing model weights in cloud
+matplotlib # for plotting
