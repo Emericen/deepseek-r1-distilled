@@ -43,18 +43,25 @@ class ModelHubMixin:
         llm_config = _filter_dict_by_dataclass(llm_config, ModelConfig)
         model_config = ModelConfig(**llm_config)
 
-        with init_empty_weights():
+        if "Llama" in repo_id:
             model = cls(model_config)
-
-        model = load_checkpoint_and_dispatch(
-            model,
-            model_path,
-            device_map=device_map,
-            dtype=torch.bfloat16,
-            no_split_module_classes=["Block"],
-        )
-
-        return model
+            return load_checkpoint_and_dispatch(
+                model,
+                model_path,
+                device_map=device_map,
+                dtype=torch.float,
+                no_split_module_classes=["Block"],
+            )
+        else:
+            with init_empty_weights():
+                model = cls(model_config)
+            return load_checkpoint_and_dispatch(
+                model,
+                model_path,
+                device_map=device_map,
+                dtype=torch.bfloat16,
+                no_split_module_classes=["Block"],
+            )
 
     def save_pretrained(
         self,

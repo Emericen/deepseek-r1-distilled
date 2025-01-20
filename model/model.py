@@ -4,6 +4,8 @@ import torch.nn.functional as F
 
 from model.config import ModelConfig
 from model.mixin import ModelHubMixin
+from tokenizers import Tokenizer
+from typing import List, Optional
 
 
 class RotaryEmbedding(nn.Module):
@@ -15,9 +17,6 @@ class RotaryEmbedding(nn.Module):
         self.inv_freq = 1.0 / (t ** (r / d)).float()
 
     def forward(self, x, position_ids):
-        # if position_ids.dim() == 3:
-        #     inv_freq = self.inv_freq.unsqueeze(0).unsqueeze(0).to(x.device)
-        # else:
         inv_freq = self.inv_freq.to(x.device)
 
         position_ids = position_ids.unsqueeze(-1)
@@ -69,27 +68,11 @@ class CausalSelfAttention(nn.Module):
 
     @staticmethod
     def _apply_rotary_pos_emb(q, k, cos, sin):
-        # if cos.dim() == 4:
-        #     # shape [B, 3, T, D] -> multi-modal
-        #     cos = CausalSelfAttention._process_rotary_component(cos)
-        #     sin = CausalSelfAttention._process_rotary_component(sin)
-        # else:
-        #     # shape [B, T, D] -> text-only
-        #     cos = cos.unsqueeze(1)
-        #     sin = sin.unsqueeze(1)
         cos = cos.unsqueeze(1)
         sin = sin.unsqueeze(1)
         q_embed = (q * cos) + (CausalSelfAttention._rotate_half(q) * sin)
         k_embed = (k * cos) + (CausalSelfAttention._rotate_half(k) * sin)
         return q_embed, k_embed
-
-    # @staticmethod
-    # def _process_rotary_component(x):
-    #     # Split into sections and select appropriate indices
-    #     sections = x.split([16, 24, 24, 16, 24, 24], dim=-1)
-    #     processed = [m[i % 3] for i, m in enumerate(sections)]
-    #     # Combine and add dimension
-    #     return torch.cat(processed, dim=-1).unsqueeze(1)
 
     @staticmethod
     def _rotate_half(x):
@@ -153,7 +136,10 @@ class Transformer(nn.Module):
         x = self.norm(x)
         return x
 
-class DeepSeekR1Mini(nn.Module, ModelHubMixin):
+
+################################################################################
+
+class DeepSeekR1Distilled(nn.Module, ModelHubMixin):
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -190,3 +176,25 @@ class DeepSeekR1Mini(nn.Module, ModelHubMixin):
             next_token = probs.argmax(dim=-1, keepdim=True)
             input_ids = torch.cat([input_ids, next_token], dim=1)
         return input_ids
+
+
+################################################################################
+
+class Processor:
+    def __init__(self, repo_id: str):
+        self.tokenizer = Tokenizer.from_pretrained(repo_id)
+
+    def __call__(
+        self,
+        inputs: List[str],
+        device: Optional[str] = None,
+    ) -> dict:
+        input_ids = []
+        for item in inputs:
+            input_ids.extend(self.tokenizer.encode(item).ids)
+
+        input_ids = torch.tensor([input_ids], dtype=torch.long)
+        if device is not None:
+            input_ids = input_ids.to(device)
+
+        return {"input_ids": input_ids}
