@@ -39,10 +39,10 @@ print(output_text)
 结果（截取）
 ```
 Okay, so I need to figure out what 55 raised to the power of 0.12 is. Hmm, let's see. I remember that 
-exponents can be a bit tricky, especially when they're not whole numbers. So, 0.12 is the same as 12/100, 
-which simplifies to 3/25. That means 55^(0.12) is the same as the 25th root of 55 cubed. Wait, is that 
-right? Let me double-check. Yeah, because when you have a fractional exponent like a/b, it's the same as 
-taking the bth root of a^a. So, 55^(3/25) is indeed the 25th root of 55 cubed.
+exponents can be a bit tricky, especially when they're not whole numbers. So, 0.12 is the same as 
+12/100, which simplifies to 3/25. That means 55^(0.12) is the same as the 25th root of 55 cubed. Wait, 
+is that right? Let me double-check. Yeah, because when you have a fractional exponent like a/b, it's 
+the same as taking the bth root of a^a. So, 55^(3/25) is indeed the 25th root of 55 cubed.
 
 But calculating the 25th root of something seems complicated. Maybe there's a better way to approach 
 this. I think using logarithms could help. If I take the natural logarithm of 55, multiply it by 0.12, 
@@ -54,20 +54,20 @@ Now, multiplying that by 0.12:
 
 4.007333146 * 0.12 ≈ 0.48088
 
-So, e^(0.48088) should be approximately equal to 55^0.12. Let me calculate e^0.48088. I know that e^0.4 
-is about 1.4918, and e^0.48 is roughly 1.6161. Since 0.48088 is just a bit more than 0.48, maybe around 1.
-617 or 1.618. Wait, that's close to the golden ratio, but I don't think that's relevant here. Let me use 
-a calculator for a more precise value.
+So, e^(0.48088) should be approximately equal to 55^0.12. Let me calculate e^0.48088. I know that 
+e^0.4 is about 1.4918, and e^0.48 is roughly 1.6161. Since 0.48088 is just a bit more than 0.48, maybe 
+around 1.617 or 1.618. Wait, that's close to the golden ratio, but I don't think that's relevant 
+here. Let me use a calculator for a more precise value.
 
 Alternatively, I could use the common logarithm instead. Let's try that. Log base 10 of 55 is 
 approximately 1.7403627. Multiplying that by 0.12 gives:
 
 1.7403627 * 0.12 ≈ 0.2088435
 
-Now, 10 raised to the power of 0.2088435. I know that 10^0.2 is about 1.5849, and 10^0.2088435 should be 
-slightly higher. Maybe around 1.616 or so. That seems consistent with the natural logarithm method.
+Now, 10 raised to the power of 0.2088435. I know that 10^0.2 is about 1.5849, and 10^0.2088435 should 
+be slightly higher. Maybe around 1.616 or so. That seems consistent with the natural logarithm method.
 
-Wait, both methods gave me approximately the same result, around 1.616. That makes me more confident that 
-the answer is correct.
+Wait, both methods gave me approximately the same result, around 1.616. That makes me more confident 
+that the answer is correct.
 ```
 🤯🤯🤯
