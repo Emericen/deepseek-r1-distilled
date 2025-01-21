@@ -2,12 +2,20 @@
 
 # ✨ DeepSeek R1 Distilled
 
-一个简洁易读的 DeepSeek R1 Distilled 的 PyTorch 实现。
+本代码库提供了基于 DeepSeek R1 蒸馏而来的 6 个小型模型的极简实现。DeepSeek R1 是一个通过大规模强化学习训练来执行思维链推理的LLM。这里的 6 个模型是基于 Qwen 和 Llama 的微调版本，使用 80万条由 DeepSeek R1 生成的思维链数据进行训练。简易期间，这里只使用了 SFT 进行微调，但强化学习可以进一步提升模型性能。
+
+支持的模型：
+- `DeepSeek-R1-Distill-Qwen-1.5B`
+- `DeepSeek-R1-Distill-Qwen-7B`
+- `DeepSeek-R1-Distill-Qwen-14B`
+- `DeepSeek-R1-Distill-Qwen-32B`
+- `DeepSeek-R1-Distill-Llama-8B`
+- `DeepSeek-R1-Distill-Llama-70B`
+
+更多信息请参考官方 [DeepSeek R1 原始仓库](https://github.com/deepseek-ai/DeepSeek-R1) 和 [DeepSeek R1 报告](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)。
 
 
-此外，我在找志同道合的人合伙一起构建视觉 AI Agent。如果你对此感兴趣，请随时联系我🤗~ (我的主页在 [这里](https://github.com/Emericen))
-
----
+另外，我在找志同道合的人来合伙构建基于视觉的 AI Agent。如果你对此感兴趣，请随时联系我🤗~ (我的主页在 [这里](https://github.com/Emericen))
 
 ## 🦋 快速开始
 
@@ -17,21 +25,24 @@
 pip install -r requirements.txt
 ```
 
-你可以像下面这样使用这个代码库：
+本代码库的使用方式如下：
 ```python
-from model.model import DeepSeekR1Distilled
-from model.processor import Processor
+from model.model import DeepSeekR1Distilled, Processor
 
-# text-only models
 model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
 model = DeepSeekR1Distilled.from_pretrained(repo_id=model_name, device_map="auto")
 processor = Processor(repo_id=model_name)
 
-context = ["<|im_start|>user\nwhat is 55^0.12<|im_end|>\n<|im_start|>assistant\n"]
-# 55^0.12 is roughly 1.61749714485
+context = ["55^0.12 等于多少?"]
+# 正确答案是 1.61749714485
 
 inputs = processor(context, device="cuda")
-output = model.generate(input_ids=inputs["input_ids"], max_new_tokens=1024)
+output = model.generate(
+    input_ids=inputs["input_ids"],
+    max_new_tokens=1024,
+    temperature=0.6, 
+    # 原文建议 temperature 为 0.5 到 0.8
+)
 output_text = processor.tokenizer.decode(output[0].tolist())
 print(output_text)
 ```
@@ -71,3 +82,7 @@ Wait, both methods gave me approximately the same result, around 1.616. That mak
 that the answer is correct.
 ```
 🤯🤯🤯
+
+## 有没有人想一起构建视觉 AI Agent？
+
+我在找志同道合的人来合伙。如果你对此感兴趣，请随时联系我🤗~ (我的主页在 [这里](https://github.com/Emericen))

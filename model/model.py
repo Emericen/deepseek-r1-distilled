@@ -167,13 +167,20 @@ class DeepSeekR1Distilled(nn.Module, ModelHubMixin):
         return logits
 
     def generate(
-        self, input_ids: torch.Tensor, max_new_tokens: int = 1
+        self,
+        input_ids: torch.Tensor,
+        max_new_tokens: int = 1,
+        temperature: float = 0.0,
     ) -> torch.Tensor:
         for _ in range(max_new_tokens):
             logits = self.forward(input_ids=input_ids)
             last_logits = logits[:, -1, :]
-            probs = F.softmax(last_logits, dim=-1)
-            next_token = probs.argmax(dim=-1, keepdim=True)
+            if temperature == 0.0:
+                next_token = last_logits.argmax(dim=-1, keepdim=True)
+            else:
+                scaled_logits = last_logits / temperature
+                probs = F.softmax(scaled_logits, dim=-1)
+                next_token = torch.multinomial(probs, num_samples=1)
             input_ids = torch.cat([input_ids, next_token], dim=1)
         return input_ids
 
